@@ -553,3 +553,54 @@ Bundler.require(platform)
 ```
 
 * Không xoá ``` Gemfile.lock ``` trong version management system. File này nhằm đảm bảo môi trường phát triển của developer nào cũng chạy gem cùng phiên bản khi ``` bundle install ```.
+
+## Debugging function
+
+* Đôi khi sẽ cần viết những chức năng có mục đích thử nghiệm hoặc debug, chỉ cần thiết trong thời gian ngắn, không nhằm mục đích release lên môi trường thật.
+
+* Những chức năng như vậy cần đặt tên chứa các từ "test" hoặc "debug" làm tiền tố.
+
+```ruby
+# cách viết không tốt, dễ nhầm lẫn
+class MailSendingController < ApplicationController
+  def create
+  end
+end
+
+module CSVReading
+  def open_file
+  end
+end
+
+# cách viết tốt
+class TestMailSendingController < ApplicationController
+  def create
+  end
+end
+
+module TestCSVReading
+  def open_file
+  end
+end
+```
+
+* Khuyến khích dùng TODO comment để các IDE hoặc Git hooks phát hiện được (nếu dự án yêu cầu hooks).
+
+```ruby
+# TODO: remove this when CSV module is completed
+module TestCSVReading
+  def open_file
+  end
+end
+```
+
+* Khuyến khích kiểm tra môi trường trước khi thực thi chức năng.
+
+```ruby
+class TestMailSendingController < ApplicationController
+  def create
+    render_error_page 404 if Rails.env.production?
+    # your code here
+  end
+end
+```
