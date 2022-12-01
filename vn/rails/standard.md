@@ -558,7 +558,7 @@ Bundler.require(platform)
 
 * Đôi khi sẽ cần viết những chức năng có mục đích thử nghiệm hoặc debug, chỉ cần thiết trong thời gian ngắn, không nhằm mục đích release lên môi trường thật.
 
-* Những chức năng như vậy cần đặt tên chứa các từ "test" hoặc "debug" làm tiền tố.
+* Những chức năng như vậy cần đặt tên chứa từ "test" làm tiền tố.
 
 ```ruby
 # cách viết không tốt, dễ nhầm lẫn
@@ -572,6 +572,16 @@ module CSVReading
   end
 end
 
+module MailSending
+  # method thực hiện chức năng chính
+  def send_to
+  end
+
+  # method để debug cụ thể một trường hợp nào đó, dễ sử dụng nhầm lẫn
+  def send_to_group
+  end
+end
+
 # cách viết tốt
 class TestMailSendingController < ApplicationController
   def create
@@ -580,6 +590,16 @@ end
 
 module TestCSVReading
   def open_file
+  end
+end
+
+module MailSending
+  # method thực hiện chức năng chính
+  def send_to
+  end
+
+  # thêm tiền tố test
+  def test_send_to_group
   end
 end
 ```

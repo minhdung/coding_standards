@@ -569,3 +569,76 @@ Bundler.require(platform)
 ```
 
 * バージョン管理システムから ``` Gemfile.lock ``` を削除してはいけない。これは確率論的に変更されるファイルではなく、どのチームメンバーが ``` bundle install ``` しても全ての gem のバージョンが揃うために必要である。
+
+## デバッグ用コード作成の規約
+
+* プログラムを開発する時に調査また検証するべき場合があるので、デバッグ用コードを作成することが必要だ。このコードは本番環境にリリースすることは禁止だ。
+
+* そのために、デバッグ用コードを作成するルールを設定しなければならない。
+
+*　メソッドの先頭に「test」を持ってくる
+
+```ruby
+# 迷いやすい書き方
+class MailSendingController < ApplicationController
+  def create
+  end
+end
+
+module CSVReading
+  def open_file
+  end
+end
+
+module MailSending
+  # 主な機能を実施するメソッド
+  def send_to
+  end
+
+  # デバッグ用メソッド
+  def send_to_group
+  end
+end
+
+# きれいな書き方
+class TestMailSendingController < ApplicationController
+  def create
+  end
+end
+
+module TestCSVReading
+  def open_file
+  end
+end
+
+module MailSending
+  # 主な機能を実施するメソッド
+  def send_to
+  end
+
+  # メソッドの先頭に「test」を持ってくる
+  def test_send_to_group
+  end
+end
+```
+
+* IDEツールとGit hooksは検知できるようにTODOをコメントした方が良い。
+
+```ruby
+# TODO: remove this when CSV module is completed
+module TestCSVReading
+  def open_file
+  end
+end
+```
+
+* リリースする前にenvファイルの情報を確認する必要だ。
+
+```ruby
+class TestMailSendingController < ApplicationController
+  def create
+    render_error_page 404 if Rails.env.production?
+    # your code here
+  end
+end
+```
